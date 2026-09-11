@@ -1,0 +1,27 @@
+import Mathlib.Data.Nat.Basic
+import Mathlib.Tactic
+
+def digitalRootMod (n : ℕ) : ℕ :=
+  let r := n % 9
+  if r = 0 then 9 else r
+
+def isVortexLocked (n : ℕ) : Prop :=
+  let dr := digitalRootMod n
+  dr = 3 ∨ dr = 6 ∨ dr = 9
+
+-- Formal verification of shift invariance across a 9-node modular cycle
+theorem shift_invariance (n : ℕ) : isVortexLocked n ↔ isVortexLocked (n + 9) := by
+  dsimp [isVortexLocked, digitalRootMod]
+  have h_mod : (n + 9) % 9 = n % 9 := by
+    exact Nat.add_mod_right n 9
+  rw [h_mod]
+
+-- Exhaustive runtime/kernel check for specific vortex targets using decide
+example : isVortexLocked 3 := by
+  decide
+
+example : isVortexLocked 12 := by
+  decide
+
+example : ¬ isVortexLocked 4 := by
+  decide
